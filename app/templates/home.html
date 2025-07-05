@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUGSENSE PRO-Nmap Scanner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="top-bar"><h1>🛡️BugSense Pro</h1>
+    <p>Welcome, {{ user }} | <a href="{{ url_for('main.logout') }}">Logout</a></p></div>
+    <p>Welcome to ethical recon toolkit</p><br><hr>
+    <form method="POST" action="/scan">
+        <label for="target">Enter Target IP or Domain: </label>
+        <input type="text" id="target" name="target" required>
+        <button type="submit">Run Nmap scan</button>
+    </form>
+
+    <h3>Fuzz for Hidden Directories</h3>
+    <form method="POST" action="/fuzz">
+        <label for="target">Enter Target URL: </label>
+        <input type="text" name="target" required>
+        <button type="submit">Start Fuzzing</button>
+    </form>
+    <div id="clear">
+    <form method="POST" action="/clear">
+        <button type="submit">Clear all</button>
+    </div></form>
+
+    <form method="POST" action="/download">
+        <input type="hidden" name="result" value="{{result|replace('\n', '&#10;')}}">
+        <input type="hidden" name="fuzz_results" value="{% for url, status, severity in fuzz_results %}{{ url }} - Status: {{ status }}{% if severity %} - Severity: {{ severity }}{% endif %}&#10;{% endfor %}">
+        <button type="submit">Download Results</button>
+    </div></form>
+
+    {% if result %}
+    <h2>Scan Results for {{target}}:
+    </h2>
+        <pre>{{result}}</pre>
+    {% endif %}
+
+        <pre>{{fuzz_results }}</pre>
+    {% if fuzz_results %}
+    <h2>Fuzz Results for {{target}}:
+    </h2>
+    {% if fuzz_results|length == 0 %}
+    <p>No valid paths found. Try using a longer or custom wordlist. </p>
+    {% else %}
+    <ul>
+{% for url, status, severity in fuzz_results %}
+    <li>
+    {{ url }} — Status: <strong>{{ status }}</strong>
+    {% if severity %}
+        Severity: 
+        {% if severity == "Critical" %}
+            <span style="color: red;">🚨 {{ severity }}</span>
+        {% elif severity == "High" %}
+            <span style="color: orange;">⚠️ {{ severity }}</span>
+        {% elif severity == "Medium" %}
+            <span style="color: goldenrod;">🟡 {{ severity }}</span>
+        {% elif severity == "Low" %}
+            <span style="color: gray;">👀 {{ severity }}</span>
+      {% endif %}
+    {% endif %}
+  </li>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+</body>
+</html>

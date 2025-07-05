@@ -1,0 +1,15 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+<div class="login-box"><h2>Login to BugSense Pro</h2>
+<form method="POST">
+    <label>Username:</label><br>
+    <input type="text" name="username"><br>
+    <label>Password:</label><br>
+    <input type="password" name="password"><br><br>
+    <button type="submit">Log In</button>
+</form>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <p class="error">{{ messages[0] }}</p>
+  {% endif %}
+{% endwith %}</div>
